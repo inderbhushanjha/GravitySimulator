@@ -1,2 +1,2 @@
 # GravitybyInder
-simple gravity simulation of balls in python
+simple gravity simulation of regular in python
