@@ -1,0 +1,61 @@
+import pandas as pd
+
+# Loan setup
+principal = 714237.76
+annual_rate = 0.11
+daily_rate = annual_rate / 365
+monthly_budget = 50000
+
+
+# Display as separate sheets for clarity
+
+
+
+def simulate_full_repayment(strategy="monthly"):
+    balance = principal
+    data = []
+    month = 0
+
+    while balance > 0 and month < 200:  # safeguard max 200 months
+        month += 1
+        days = 30
+        interest = 0
+
+        if strategy == "monthly":
+            interest = balance * daily_rate * days
+            payment = min(monthly_budget, balance + interest)
+            balance = max(0, balance + interest - payment)
+
+        elif strategy == "weekly":
+            weekly_payment = monthly_budget / 4
+            for week in range(4):
+                interest += balance * daily_rate * 7
+                balance = max(0, balance - weekly_payment)
+            payment = monthly_budget
+
+        elif strategy == "daily":
+            daily_payment = monthly_budget / days
+            for day in range(days):
+                interest += balance * daily_rate
+                balance = max(0, balance - daily_payment)
+            payment = monthly_budget
+
+        data.append([month, round(interest, 2), round(payment, 2), round(balance, 2)])
+
+    return pd.DataFrame(data, columns=["Month", "Interest Paid", "Payment", "Closing Balance"])
+
+
+# Run simulations
+monthly_full = simulate_full_repayment("monthly")
+weekly_full = simulate_full_repayment("weekly")
+daily_full = simulate_full_repayment("daily")
+
+# Display in Colab
+print("Monthly Lump Sum OD Repayment")
+display(monthly_full)
+
+print("Weekly OD Repayment")
+display(weekly_full)
+
+print("Daily OD Repayment")
+display(daily_full)
